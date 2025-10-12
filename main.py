@@ -37,9 +37,11 @@ def main_func():
 
 if __name__ == '__main__':
     print(f"{BRIGHT_CYAN}Initializing system...")
-    time.sleep(1)
+    time.sleep(2)
     sql_connect()
+    time.sleep(2)
     create_database()
     create_tables()
+    time.sleep(1.5)
     main_func()
     print(f"{BRIGHT_CYAN}System shutdown. Goodbye!")

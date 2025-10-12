@@ -42,16 +42,23 @@ def show_table(sql, params=None, title=None):
     pause()
     return df
 
-def menu_box(title, options, prompt="Select an option: "):
+def menu_box(title, options, prompt="Select an option: "): #--> k is 1,2,3... and v is title for menu [[]] each nested list is for new row
     print(f"\n{BRIGHT_YELLOW}{title}")
-    print(tabulate([[k + ". " + v] for k, v in options.items()], tablefmt="fancy_grid"))
+    if type(options) is list:
+        print(tabulate([[i] for i in options], tablefmt="fancy_grid"))
+    elif type(options) is dict:
+        print(tabulate([[k + ". " + v] for k, v in options.items()], tablefmt="fancy_grid"))
+    else:
+        print(f"{BRIGHT_RED}Invalid options format.")
+        return None
     return input(f"{BRIGHT_CYAN}{prompt}").strip()
 
 def dashboard_loop(title, options):
     while True:
         choice = menu_box(title, {k: v[0] for k, v in options.items()})
         func = options.get(choice, [None, None])[1]
-        if func: func()
+        if func:
+            func()
         elif choice == "0" or func is None:
             print(f"{BRIGHT_MAGENTA}↩ Back to previous menu.")
             break

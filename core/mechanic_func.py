@@ -3,13 +3,12 @@
 #  Role: MECHANIC
 #  Stage-1 Simplified & Styled Version
 # =====================================================
-
 import pandas as pd
 import stdiomask
 from tabulate import tabulate
 from db.queries_sql import mycon, cursor, engcon
-from core.utils_cli import pause, menu_box,fetch_df, exec_sql
 from styles import *
+from core.utils_cli import pause, menu_box,fetch_df, exec_sql
 
 
 # ================== Local Helpers ==================
