@@ -1,0 +1,140 @@
+-- ++++++++++++=========INSTRUCTIONS======================================= 
+
+-- JUST COPY AND PASTE IT WHOLE
+-- BEFORE PASTING THIS ENSURE THAT YOU HAVE RUN THE PROGRAM AT LEAST ONCE SO THAT TABLES HAVE BEEN CREATED 
+
+
+
+
+
+
+START TRANSACTION;
+
+-- ================= USERS =================
+INSERT INTO users (user_id, name, username, email, phone, address, city, state, password, user_role, registered_at) VALUES
+(1,'Admin Mehul','admin','admin@garage.com','9876543210','Main Street 10','Mumbai','Maharashtra','admin123','Admin',NOW()),
+(2,'Ravi Sharma','ravi12','ravi@example.com','9876501234','22 Park Road','Delhi','Delhi','pass123','Customer',NOW()),
+(3,'Sneha Patel','snehaP','sneha@example.com','9123456780','44 Green Colony','Ahmedabad','Gujarat','mypwd','Customer',NOW()),
+(4,'Arjun Nair','arjunN','arjun@example.com','9811122233','14 MG Road','Bengaluru','Karnataka','cust1','Customer',NOW()),
+(5,'Pooja Iyer','poojaI','pooja@example.com','9822233344','7 Lake View','Chennai','Tamil Nadu','cust2','Customer',NOW()),
+(6,'Vikas Yadav','vikasY','vikas@example.com','9833344455','9 Ring Road','Lucknow','Uttar Pradesh','cust3','Customer',NOW()),
+(7,'Sara Khan','saraK','sara@example.com','9855566677','3 River Side','Bhopal','Madhya Pradesh','cust4','Customer',NOW()),
+(8,'Amit Verma','amitV','amit@example.com','9090909090','11 Industrial Area','Pune','Maharashtra','amitpwd','Mechanic',NOW()),
+(9,'Priya Singh','priyaM','priya@example.com','9988776655','55 Garage Road','Jaipur','Rajasthan','priyapwd','Mechanic',NOW()),
+(10,'Rahul Desai','rahulD','rahul@example.com','9877012345','88 Station Rd','Surat','Gujarat','rahulpwd','Mechanic',NOW());
+
+-- ================= VEHICLES =================
+INSERT INTO vehicles (vehicle_no, vehicle_brand, model, type, user_id) VALUES
+('MH12AB1234','Maruti Suzuki','Swift','Car',2),
+('DL05XY5678','Hero','Splendor','Bike',2),
+('GJ01MN4321','Hyundai','Creta','Car',3),
+('RJ14PQ7890','Tata','407','Truck',3),
+('KA01CD1111','Honda','City','Car',4),
+('TN09EF2222','TVS','Apache','Bike',5),
+('UP32GH3333','Mahindra','Bolero','Car',6),
+('MP04LM5555','Toyota','Innova Crysta','Car',7);
+
+-- ================= SERVICES (1–20) =================
+INSERT INTO services (service_id, service_name, description, base_price, estimated_hours, warranty_months, category, status, created_at) VALUES
+(1,'Oil Change','Engine oil replacement with filter',1200.00,2,1,'Maintenance','Active',NOW()),
+(2,'Brake Fluid Replacement','Flush and refill brake fluid',900.00,1,3,'Maintenance','Active',NOW()),
+(3,'Coolant Flush','Radiator coolant flush and refill',1500.00,2,6,'Maintenance','Active',NOW()),
+(4,'Air Filter Replacement','Replace engine air filter',600.00,1,6,'Maintenance','Active',NOW()),
+(5,'AC Service','Air conditioning cleaning and gas refill',2000.00,4,3,'Maintenance','Active',NOW()),
+(6,'Wheel Alignment & Balancing','Tyre alignment and balancing checkup',800.00,2,0,'Maintenance','Active',NOW()),
+(7,'Battery Replacement','New battery installation with testing',4500.00,1,24,'Maintenance','Active',NOW()),
+(8,'Spark Plug Replacement','Replace spark plugs for efficient combustion',700.00,1,12,'Maintenance','Active',NOW()),
+(9,'Clutch Repair','Clutch plate replacement',3500.00,5,0,'Repair','Active',NOW()),
+(10,'Engine Overhaul','Complete engine dismantling & repair',15000.00,20,6,'Repair','Active',NOW()),
+(11,'Suspension Repair','Shock absorbers and suspension system service',7000.00,6,6,'Repair','Active',NOW()),
+(12,'Brake Pad Replacement','Change front & rear brake pads',2500.00,2,6,'Repair','Active',NOW()),
+(13,'Radiator Repair','Leak test & radiator welding service',5000.00,5,6,'Repair','Active',NOW()),
+(14,'Pollution Check','Emissions test for regulatory compliance',500.00,1,0,'Inspection','Active',NOW()),
+(15,'General Vehicle Inspection','Multi-point inspection (brakes, lights, fluids)',1000.00,2,0,'Inspection','Active',NOW()),
+(16,'Headlight Upgrade','Install LED headlight kit',2500.00,2,12,'Upgrade','Active',NOW()),
+(17,'Music System Upgrade','Install speakers & infotainment system',12000.00,6,24,'Upgrade','Active',NOW()),
+(18,'GPS Tracker Installation','Real-time GPS tracking system',6000.00,2,12,'Upgrade','Active',NOW()),
+(19,'Paint Touchup','Minor dent & paint touchup',5000.00,6,12,'Painting','Active',NOW()),
+(20,'Full Body Repaint','Complete body repaint',25000.00,40,24,'Painting','Active',NOW());
+
+-- ================= SERVICE BOOKINGS =================
+INSERT INTO service_bookings (booking_id, vehicle_no, service_id, booking_date, status) VALUES
+(1,'MH12AB1234',1,NOW(),'Completed'),
+(2,'DL05XY5678',2,NOW(),'In Progress'),
+(3,'GJ01MN4321',6,NOW(),'Pending'),
+(4,'RJ14PQ7890',19,NOW(),'Completed'),
+(5,'KA01CD1111',11,NOW(),'Completed'),
+(6,'TN09EF2222',16,NOW(),'Completed'),
+(7,'UP32GH3333',10,NOW(),'In Progress'),
+(8,'MP04LM5555',20,NOW(),'Pending'),
+(9,'MH12AB1234',14,NOW(),'Completed'),
+(10,'KA01CD1111',18,NOW(),'Completed'),
+(11,'TN09EF2222',12,NOW(),'In Progress'),
+(12,'UP32GH3333',5,NOW(),'Completed');
+
+-- ================= MECHANICS INFO =================
+INSERT INTO mechanics_info (mechanic_id, full_name, specialization, phone, email) VALUES
+(1,'Amit Verma','Engine Specialist','9090909090','amit@example.com'),
+(2,'Priya Singh','Painting & Body Work','9988776655','priya@example.com'),
+(3,'Rahul Desai','Electrical Systems','9877012345','rahul@example.com');
+
+-- ================= MECHANIC ASSIGNMENTS =================
+INSERT INTO mechanic_assignments (assignment_id, booking_id, mechanic_id, assigned_date) VALUES
+(1,1,1,NOW()),
+(2,2,1,NOW()),
+(3,3,3,NOW()),
+(4,4,2,NOW()),
+(5,5,2,NOW()),
+(6,6,3,NOW()),
+(7,7,1,NOW()),
+(8,8,2,NOW()),
+(9,9,3,NOW()),
+(10,10,1,NOW()),
+(11,11,3,NOW()),
+(12,12,2,NOW());
+
+-- ================= INVOICES =================
+-- amounts aligned roughly to the service base_price above
+INSERT INTO invoices (invoice_id, booking_id, user_id, amount, payment_status, payment_method, invoice_date) VALUES
+(1,1,2,1200.00,'Paid','UPI',NOW()),          -- Ravi, Oil Change
+(2,2,2,900.00,'Pending','Cash',NOW()),        -- Ravi, Brake Fluid
+(3,3,3,800.00,'Pending','Card',NOW()),        -- Sneha, Alignment
+(4,4,3,5000.00,'Paid','Bank Transfer',NOW()), -- Sneha, Paint Touchup
+(5,5,4,7000.00,'Paid','UPI',NOW()),           -- Arjun, Suspension
+(6,6,5,2500.00,'Paid','Card',NOW()),          -- Pooja, Headlight
+(7,7,6,15000.00,'Pending','UPI',NOW()),       -- Vikas, Engine Overhaul
+(8,8,7,25000.00,'Pending','Card',NOW()),      -- Sara, Full Repaint
+(9,9,2,500.00,'Paid','Cash',NOW()),           -- Ravi, Pollution
+(10,10,4,6000.00,'Paid','UPI',NOW()),         -- Arjun, GPS Tracker
+(11,11,5,2500.00,'Pending','Cash',NOW()),     -- Pooja, Brake Pads
+(12,12,6,2000.00,'Paid','Card',NOW());        -- Vikas, AC Service
+
+-- ================= PARTS INVENTORY =================
+INSERT INTO parts_inventory (part_id, part_name, description, unit_price, stock_quantity, supplier) VALUES
+(1,'Engine Oil 5W30','Synthetic engine oil',400.00,50,'Castrol Supplier'),
+(2,'Brake Fluid DOT4','High performance brake fluid',250.00,30,'Bosch Dealer'),
+(3,'Air Filter Swift','OEM air filter for Maruti Swift',350.00,20,'Maruti Genuine Parts'),
+(4,'LED Headlight Kit','Universal LED headlight upgrade',2200.00,15,'Philips Dealer'),
+(5,'Clutch Plate Set','Clutch plate for cars',3000.00,10,'Valeo Supplier'),
+(6,'Spark Plug (Set of 4)','Copper/Iridium spark plugs',600.00,40,'NGK Supplier'),
+(7,'Fuel Filter (Universal)','Inline fuel filter',500.00,35,'Bosch Dealer'),
+(8,'Wiper Blade 16"','Single blade 16 inch',200.00,60,'Hella Dealer'),
+(9,'Battery 12V 45Ah','Maintenance free car battery',5200.00,12,'Exide Dealer'),
+(10,'Brake Pad Front (Swift)','Front pad set Swift',1800.00,18,'Maruti Genuine Parts'),
+(11,'Radiator Hose','Rubber hose universal',350.00,25,'Local Supplier'),
+(12,'Alternator Assembly','12V alternator',6500.00,6,'Lucas-TVS Dealer'),
+(13,'Starter Motor','Car starter motor',5200.00,5,'Bosch Dealer'),
+(14,'Timing Belt','Rubber timing belt',2400.00,14,'Gates Dealer'),
+(15,'Coolant (1L)','Ethylene glycol coolant',350.00,40,'Bosch Dealer');
+
+-- ================= FEEDBACK =================
+INSERT INTO feedback (feedback_id, booking_id, rating, comments, created_at) VALUES
+(1,1,5,'Excellent service, quick and professional!',NOW()),
+(2,2,4,'Work in progress, staff is helpful.',NOW()),
+(3,4,5,'Paint touchup looks great.',NOW()),
+(4,5,5,'Suspension feels solid after repair.',NOW()),
+(5,6,4,'Headlights are bright, clean wiring.',NOW()),
+(6,9,5,'Pollution check was super quick.',NOW()),
+(7,12,4,'AC is cooling well now.',NOW());
+
+COMMIT;
