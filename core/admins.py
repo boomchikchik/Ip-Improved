@@ -1,16 +1,9 @@
-# =====================================================
-#  Vehicle Garage Management System (CLI)
-#  Role: ADMIN
-#  Stage-1 Simplified & Styled Version
-# =====================================================
 
 import pandas as pd
 from db.queries_sql import mycon, cursor, engcon
 from styles import *
 from core.graph import plot_from_sql
 from core.utils_cli import pause, fetch_df, exec_sql, show_table, menu_box, dashboard_loop,dashboard_loop as submenu
-
-
 
 # ================== AUTH ==================
 def admin_login():
@@ -159,14 +152,6 @@ def update_service():
     exec_sql(f"UPDATE services SET {field}=%s WHERE service_id=%s", (val, sid),
              success=f"{BRIGHT_GREEN}✅ Service updated successfully.")
 
-
-def toggle_service():
-    sid = input(f"{BRIGHT_YELLOW}Service ID: ").strip()
-    status = input(f"{BRIGHT_YELLOW}New Status (Active/Inactive): ").strip().title()
-    exec_sql("UPDATE services SET status=%s WHERE service_id=%s", (status, sid),
-             success=f"{BRIGHT_GREEN}✅ Status updated.")
-
-
 # ================== MECHANICS ==================
 def add_mechanic():
     name = input(f"{BRIGHT_YELLOW}Full Name: ").strip()
@@ -238,18 +223,6 @@ def generate_invoice():
              success=f"{BRIGHT_GREEN}✅ Invoice generated successfully.")
 
 
-# ================== INVOICES ==================
-def generate_invoice():
-    bid = input(f"{BRIGHT_YELLOW}Booking ID: ").strip()
-    uid = input(f"{BRIGHT_YELLOW}User ID: ").strip()
-    amt = float(input(f"{BRIGHT_YELLOW}Amount: ") or 0)
-    pay = input(f"{BRIGHT_YELLOW}Payment Status (Pending/Paid/Failed): ").strip().title() or "Pending"
-    method = input(f"{BRIGHT_YELLOW}Payment Method (Cash/Card/UPI/Bank): ").strip().title() or "Cash"
-    exec_sql("""INSERT INTO invoices(booking_id,user_id,amount,payment_status,payment_method,invoice_date)
-                VALUES(%s,%s,%s,%s,%s,NOW())""", (bid, uid, amt, pay, method),
-             success=f"{BRIGHT_GREEN}✅ Invoice generated successfully.")
-
-
 def search_edit_invoice():
     inv = input(f"{BRIGHT_YELLOW}Invoice ID (blank to search): ").strip()
     if inv:
@@ -292,41 +265,6 @@ def list_feedback():
                   ORDER BY f.created_at DESC""",
                 title=f"{BRIGHT_CYAN}Customer Feedbacks")
 
-
-def revenue_report():
-    grp = input(f"{BRIGHT_YELLOW}Group by (D/W/M): ").strip().upper() or "D"
-
-    if grp == "W":
-        sql = """
-            SELECT YEAR(invoice_date) AS y,
-                   WEEK(invoice_date) AS w,
-                   SUM(amount) AS revenue
-            FROM invoices
-            GROUP BY YEAR(invoice_date), WEEK(invoice_date)
-            ORDER BY y DESC, w DESC;
-        """
-    elif grp == "M":
-        sql = """
-            SELECT YEAR(invoice_date) AS y,
-                   MONTH(invoice_date) AS m,
-                   SUM(amount) AS revenue
-            FROM invoices
-            GROUP BY YEAR(invoice_date), MONTH(invoice_date)
-            ORDER BY y DESC, m DESC;
-        """
-    else:
-        sql = """
-            SELECT DATE(invoice_date) AS d,
-                   SUM(amount) AS revenue
-            FROM invoices
-            GROUP BY DATE(invoice_date)
-            ORDER BY d DESC;
-        """
-
-    show_table(sql, title=f"{BRIGHT_CYAN}Revenue Report")
-
-
-
 def service_revenue_graph():
     """Show top 10 services by total revenue from invoices."""
     sql = """
@@ -355,9 +293,8 @@ vehicles_menu = {
     "3": ("Add Service", add_service),
     "4": ("List Services", list_services),
     "5": ("Update Service", update_service),
-    "6": ("Toggle Service", toggle_service),
-    "7": ("Top Services by Revenue (Graph)", service_revenue_graph),
-    "8": ("Top Services by Bookings (Graph)", top_service_bookings_graph),
+    "6": ("Top Services by Revenue (Graph)", service_revenue_graph),
+    "7": ("Top Services by Bookings (Graph)", top_service_bookings_graph),
     "0": ("Back", None),
 }
 
@@ -376,12 +313,6 @@ def admin_dashboard(df):
         "5": ("Change Role", change_role), "6": ("Reset Password", reset_password),
         "0": ("Back", None),
     }
-    # vehicles_menu = {
-    #     "1": ("Add Vehicle", add_vehicle), "2": ("List Vehicles", list_vehicles),
-    #     "3": ("Add Service", add_service), "4": ("List Services", list_services),
-    #     "5": ("Update Service", update_service), "6": ("Toggle Service", toggle_service),
-    #     "0": ("Back", None),
-    # }
     mechanics_menu = {
         "1": ("Add Mechanic", add_mechanic), "2": ("List Mechanics", list_mechanics),
         "3": ("Assign Mechanic to Booking", assign_mechanic),
@@ -405,9 +336,7 @@ def admin_dashboard(df):
         "4": ("Top Services by Revenue", service_revenue_graph),
         "0": ("Back", None),
     }
-
-
-    # --- Main Dashboard Menu ---
+  # --- Main Dashboard Menu ---
 
     """lambda is necessary here to delay or defer the execution of the submenu function until the user explicitly chooses that option from the menu. It wraps the function call so it can be stored and executed later, rather than immediately"""
     
@@ -437,17 +366,18 @@ def revenue_report():
 
 def revenue_graph():
     grp = input(f"{BRIGHT_YELLOW}Group by (D/M): ").strip().upper() or "D"
-    kind = "line"  # You can change this to "bar" if you prefer
+    kind = "barh" if grp == "D" else "bar"# You can change this to "bar" if you prefer
 
     if grp == "M":
         # Monthly revenue (strict-mode safe)
         sql = """
-           SELECT DATE_FORMAT(invoice_date, '%Y-%m') AS period,
-        SUM(amount) AS revenue
+        SELECT DATE_FORMAT(invoice_date,'%%Y-%%m') AS period,
+            SUM(amount) AS revenue
         FROM invoices
-        GROUP BY DATE_FORMAT(invoice_date, '%Y-%m')
+        GROUP BY period
         ORDER BY period;
         """
+
         title = f"{BRIGHT_CYAN}Monthly Revenue Trend"
     else:
         # Daily revenue
@@ -462,8 +392,6 @@ def revenue_graph():
 
     # Plot it
     plot_from_sql(sql, x_col="period", y_col="revenue", title=title, kind=kind)
-
-
 
 def payment_status_graph():
     sql = """SELECT payment_status, COUNT(*) AS count

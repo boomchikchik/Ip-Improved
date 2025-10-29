@@ -1,7 +1,6 @@
 # =====================================================
 #  Vehicle Garage Management System (CLI)
 #  Role: MECHANIC
-#  Stage-1 Simplified & Styled Version
 # =====================================================
 import pandas as pd
 import stdiomask
@@ -9,31 +8,6 @@ from tabulate import tabulate
 from db.queries_sql import mycon, cursor, engcon
 from styles import *
 from core.utils_cli import pause, menu_box,fetch_df, exec_sql
-
-
-# ================== Local Helpers ==================
-
-
-def pick_from_df(df, title="Select by No.", show_index=True):
-    if df.empty:
-        print(f"{BRIGHT_RED}No records.")
-        return None
-    view = df.copy()
-    if show_index:
-        view.insert(0, "#", range(1, len(df) + 1))
-    print(f"\n{BRIGHT_CYAN}{title}")
-    print(tabulate(view, headers="keys", tablefmt="fancy_grid", showindex=False))
-    try:
-        n = int(input(f"{BRIGHT_YELLOW}Enter # (0 to cancel): "))
-        if n == 0:
-            return None
-        if 1 <= n <= len(df):
-            return df.iloc[n - 1]
-    except ValueError:
-        pass
-    print(f"{BRIGHT_RED}Invalid choice.")
-    return None
-
 
 # ================== Status Logic ==================
 _VALID_STATUSES = ["Pending", "In Progress", "Completed", "Cancelled"]
@@ -158,47 +132,34 @@ def view_assigned_jobs(mechanic_id: int):
         print(f"\n{BRIGHT_CYAN}🔧 Assigned Jobs")
         print(tabulate(df, headers="keys", tablefmt="fancy_grid", showindex=False))
     pause()
-
-
 # ================== 3) Update Job Status ==================
+
 def update_job_status(mechanic_id: int):
-    q = """
-        SELECT sb.booking_id, sb.status, s.service_name,
-               v.vehicle_no, v.vehicle_brand, v.model, sb.booking_date
-          FROM mechanic_assignments ma
-          JOIN service_bookings sb ON sb.booking_id = ma.booking_id
-          JOIN services s ON s.service_id = sb.service_id
-          JOIN vehicles v ON v.vehicle_no = sb.vehicle_no
-         WHERE ma.mechanic_id=%s
-         ORDER BY sb.booking_date DESC
-    """
-    df = fetch_df(q, (mechanic_id,))
-    row = pick_from_df(df, title="Your Jobs")
-    if row is None:
+    """Simple version: show mechanic jobs and update status."""
+    sql = """SELECT sb.booking_id, sb.status, s.service_name, v.vehicle_no
+             FROM mechanic_assignments ma
+             JOIN service_bookings sb ON sb.booking_id = ma.booking_id
+             JOIN services s ON s.service_id = sb.service_id
+             JOIN vehicles v ON v.vehicle_no = sb.vehicle_no
+             WHERE ma.mechanic_id=%s ORDER BY sb.booking_date DESC"""
+    df = fetch_df(sql, (mechanic_id,))
+    if df.empty:
+        print(f"{BRIGHT_RED}❌ No assigned jobs.")
         return
+    print(tabulate(df, headers='keys', tablefmt='fancy_grid', showindex=False))
 
-    booking_id = int(row["booking_id"])
-    current = str(row["status"])
-    allowed = _ALLOWED_TRANSITIONS.get(current, set())
-    if not allowed:
-        print(f"{BRIGHT_RED}No valid transitions from '{current}'.")
-        pause()
+    bid = input(f"{BRIGHT_YELLOW}Enter Booking ID to update: ").strip()
+    if not bid:
         return
-
-    print(f"{BRIGHT_YELLOW}Current: {current}")
-    print(f"{BRIGHT_YELLOW}Allowed → {', '.join(allowed)}")
-    new_status = input(f"{BRIGHT_YELLOW}Enter new status: ").strip().title()
-    if new_status not in allowed:
-        print(f"{BRIGHT_RED}Invalid transition.")
-        pause()
+    new_status = input(f"{BRIGHT_YELLOW}Enter new status (In Progress/Completed/Cancelled): ").strip().title()
+    if new_status not in ("Pending", "In Progress", "Completed", "Cancelled"):
+        print(f"{BRIGHT_RED}❌ Invalid status.")
         return
 
     exec_sql("UPDATE service_bookings SET status=%s WHERE booking_id=%s",
-             (new_status, booking_id),
-             ok=f"✅ Status updated to {new_status} for Booking #{booking_id}")
+             (new_status, bid),
+             success=f"{BRIGHT_GREEN}✅ Status updated to {new_status} for Booking #{bid}.")
     pause()
-
-
 # ================== 4) Job History ==================
 def job_history(mechanic_id: int):
     print(f"\n{BRIGHT_CYAN}🗂️ Job History")
