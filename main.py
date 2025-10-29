@@ -1,6 +1,3 @@
-
-
-
 import time
 from core.admins import admin_login
 from core.user_func import user_registration, user_login
@@ -10,7 +7,6 @@ from db.queries_sql import sql_connect
 from styles import *
 from core.utils_cli import pause, menu_box
 import logging
-
 
 def main_func():
     while True:
@@ -23,18 +19,20 @@ def main_func():
             "0": "🚪 Exit"
         }
         choice = menu_box("🚘 VEHICLE MANAGEMENT SYSTEM", options, "Enter choice: ")
-
-        if choice == "1": user_registration()
-        elif choice == "2": user_login()
-        elif choice == "3": admin_login()
-        elif choice == "4": mechanic_login()
+        if choice == "1": 
+            user_registration()
+        elif choice == "2": 
+            user_login()
+        elif choice == "3": 
+            admin_login()
+        elif choice == "4": 
+            mechanic_login()
         elif choice == "0":
             print(f"{BRIGHT_CYAN}👋 Thank you for using the system!")
             break
         else:
             print(f"{BRIGHT_RED}❌ Invalid choice.")
             pause()
-
 if __name__ == '__main__':
     print(f"{BRIGHT_CYAN}Initializing system...")
     time.sleep(2)

@@ -86,7 +86,7 @@ def create_tables():
             booking_id INT,
             user_id INT,
             amount DECIMAL(10, 2) NOT NULL,
-            payment_status ENUM('Pending','Paid','Failed') DEFAULT 'Pending',
+            payment_status ENUM('Unpaid','Pending','Paid','Failed') DEFAULT 'Unpaid',
             payment_method ENUM('Cash','Card','UPI','Bank Transfer') DEFAULT 'Cash',
             invoice_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (booking_id) REFERENCES service_bookings(booking_id),

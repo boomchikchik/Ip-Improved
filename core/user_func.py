@@ -96,21 +96,21 @@ def user_dashboard(df):
         print(f"{BRIGHT_GREEN}Welcome, {uname}!")
 
         print(f"""
-{BRIGHT_YELLOW}1.{BRIGHT_CYAN} View / Update Profile
-{BRIGHT_YELLOW}2.{BRIGHT_CYAN} Add Vehicle
-{BRIGHT_YELLOW}3.{BRIGHT_CYAN} Manage Vehicles
-{BRIGHT_YELLOW}4.{BRIGHT_CYAN} Browse Services
-{BRIGHT_YELLOW}5.{BRIGHT_CYAN} Book Service
-{BRIGHT_YELLOW}6.{BRIGHT_CYAN} Make Payment
-{BRIGHT_YELLOW}7.{BRIGHT_CYAN} View Booking History
-{BRIGHT_YELLOW}8.{BRIGHT_CYAN} Track Order
-{BRIGHT_YELLOW}9.{BRIGHT_CYAN} Cancel Order
-{BRIGHT_YELLOW}10.{BRIGHT_CYAN} View / Download Invoice
-{BRIGHT_YELLOW}11.{BRIGHT_CYAN} Check Payment Status
-{BRIGHT_YELLOW}12.{BRIGHT_CYAN} Leave Feedback
-{BRIGHT_MAGENTA}0.{BRIGHT_CYAN} Logout
-{BRIGHT_RED}Q.{BRIGHT_CYAN} Exit
-""")
+            {BRIGHT_YELLOW}1.{BRIGHT_CYAN} View / Update Profile
+            {BRIGHT_YELLOW}2.{BRIGHT_CYAN} Add Vehicle
+            {BRIGHT_YELLOW}3.{BRIGHT_CYAN} Manage Vehicles
+            {BRIGHT_YELLOW}4.{BRIGHT_CYAN} Browse Services
+            {BRIGHT_YELLOW}5.{BRIGHT_CYAN} Book Service
+            {BRIGHT_YELLOW}6.{BRIGHT_CYAN} Make Payment
+            {BRIGHT_YELLOW}7.{BRIGHT_CYAN} View Booking History
+            {BRIGHT_YELLOW}8.{BRIGHT_CYAN} Track Order
+            {BRIGHT_YELLOW}9.{BRIGHT_CYAN} Cancel Order
+            {BRIGHT_YELLOW}10.{BRIGHT_CYAN} View / Download Invoice
+            {BRIGHT_YELLOW}11.{BRIGHT_CYAN} Check Payment Status
+            {BRIGHT_YELLOW}12.{BRIGHT_CYAN} Leave Feedback
+            {BRIGHT_MAGENTA}0.{BRIGHT_CYAN} Logout
+            {BRIGHT_RED}Q.{BRIGHT_CYAN} Exit
+            """)
 
         choice = input(f"{BRIGHT_YELLOW}Enter your choice: ").strip().lower()
 
@@ -254,25 +254,24 @@ def book_service(uid):
     sid = input("Enter Service ID: ").strip()
     if not sid:
         return
-    exec_sql("INSERT INTO service_bookings(vehicle_no,service_id,booking_date,status) VALUES(%s,%s,NOW(),'Pending')",
-             (vno, sid),
-             ok=f"{BRIGHT_GREEN}✅ Service booked (Pending).")
+    exec_sql("INSERT INTO service_bookings(vehicle_no,service_id,booking_date,status) VALUES(%s,%s,NOW(),'Pending')",(vno, sid),ok=f"{BRIGHT_GREEN}✅ Service booked (Pending).")
+    exec_sql("INSERT INTO invoices(booking_id,user_id,amount,payment_status) VALUES(LAST_INSERT_ID(),%s,(SELECT base_price FROM services WHERE service_id=%s),'Unpaid')",(uid, sid),ok=f"{BRIGHT_GREEN}✅ Invoice created (Unpaid).")
 
 
 # ================== 9️⃣ PAYMENT ==================
 def make_payment(uid):
-    df = fetch_df("SELECT invoice_id,booking_id,amount,payment_status FROM invoices WHERE user_id=%s AND payment_status='Pending'",
+    df = fetch_df("SELECT invoice_id,booking_id,amount,payment_status FROM invoices WHERE user_id=%s AND payment_status='Unpaid'",
                   (uid,))
     if df.empty:
-        print(f"{BRIGHT_RED}No pending invoices.")
+        print(f"{BRIGHT_RED}No Unpaid invoices.")
         return
-    print(f"\n{BRIGHT_CYAN}Pending Invoices")
+    print(f"\n{BRIGHT_CYAN}Unpaid Invoices")
     print(df.to_string(index=False))
     inv = input("Invoice ID to pay: ").strip()
     if not inv:
         return
     method = input("Payment Method (Cash/Card/UPI/Bank): ").strip() or "Cash"
-    exec_sql("UPDATE invoices SET payment_status='Paid',payment_method=%s,invoice_date=NOW() WHERE invoice_id=%s AND user_id=%s",
+    exec_sql("UPDATE invoices SET payment_status='Pending',payment_method=%s,invoice_date=NOW() WHERE invoice_id=%s AND user_id=%s",
              (method, inv, uid),
              ok=f"{BRIGHT_GREEN}✅ Payment successful.")
 
